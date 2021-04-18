@@ -1,5 +1,5 @@
 // /.netlify/functions/updateLocationReminders
-import ky from 'ky'
+import got from 'got'
 
 const createLocationReminders = (itemId) => {
   return [{
@@ -24,7 +24,7 @@ export async function handler (event, context, callback) {
 
   const item = JSON.parse(event.body)
 
-  const response = await ky.get('https://api.todoist.com/sync/v8/sync', {
+  const response = await got('https://api.todoist.com/sync/v8/sync', {
     searchParams: {
       token: 'c689d97f498bb98a0fc6ffe903edcb0fb9ae1463',
       commands: JSON.stringify(createLocationReminders(item.event_data.id))
