@@ -1,11 +1,11 @@
 // /.netlify/functions/updateLocationReminders
 import got from 'got'
-import uuid from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 
 const createLocationReminders = (itemId) => {
   return [{
     "type": "reminder_add",
-    "uuid": uuid.v4(),
+    "uuid": uuidv4(),
     "args": {
       "item_id": itemId,
       "service": "email",
