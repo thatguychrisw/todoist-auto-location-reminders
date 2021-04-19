@@ -2,13 +2,13 @@
 import got from 'got'
 import { v4 as uuidv4 } from 'uuid'
 
-const createLocationReminders = (item) => {
+const createLocationReminders = (task) => {
   return [{
     "type": "reminder_add",
     "uuid": uuidv4(),
     "args": {
-      "notify_uid": item.added_by_uid,
-      "item_id": item.itemId,
+      "notify_uid": task.added_by_uid,
+      "task_id": task.taskId,
       "service": "push",
       "type": "location",
       "name": "Publix — Bluffs",
@@ -22,29 +22,34 @@ const createLocationReminders = (item) => {
 
 /**
  * As long as the task contains at least one actionable label then run the action
- * @param item
+ * @param task
  * @returns {*}
  */
-const shouldRun = (item) => {
-  const actionableLabels = [2153320725];
+const shouldRun = (task) => {
+  const actionableLabels = [2153320725]; // @publix
 
-  return item.labels.some(label => actionableLabels.includes(label))
+  return task.labels.some(label => actionableLabels.includes(label))
 }
 
-export async function handler (event, context, callback) {
-  const body = JSON.parse(event.body)
-  console.debug('received event', body)
+export async function handler (event) {
+  const eventBody = JSON.parse(event.body)
+  console.debug('parsed lambda event', eventBody)
 
-  const item = JSON.parse(body.body).event_data
+  const task = JSON.parse(eventBody.body).event_data
+  console.debug('parsed todoist task', task)
 
-  if (!shouldRun(item)) {
-    console.debug('should not update location reminders for task', item)
+  if (!shouldRun(task)) {
+    console.debug('task does not have an actionable label, aborting', task)
+
+    return {
+      statusCode: 204
+    }
   }
 
   const response = await got('https://api.todoist.com/sync/v8/sync', {
     searchParams: {
       token: 'c689d97f498bb98a0fc6ffe903edcb0fb9ae1463',
-      commands: JSON.stringify(createLocationReminders(item))
+      commands: JSON.stringify(createLocationReminders(task))
     }
   }).json()
 
