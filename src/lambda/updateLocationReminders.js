@@ -8,7 +8,7 @@ const createLocationReminders = (task) => {
     "uuid": uuidv4(),
     "args": {
       "notify_uid": task.added_by_uid,
-      "task_id": task.taskId,
+      "task_id": task.id,
       "service": "push",
       "type": "location",
       "name": "Publix — Bluffs",
