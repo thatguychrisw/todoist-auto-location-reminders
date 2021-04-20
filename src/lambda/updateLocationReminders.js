@@ -35,7 +35,7 @@ export async function handler (event) {
   const eventBody = JSON.parse(event.body)
   console.debug('parsed lambda event', eventBody)
 
-  const task = JSON.parse(eventBody.body).event_data
+  const task = eventBody.event_data
   console.debug('parsed todoist task', task)
 
   if (!shouldRun(task)) {
